@@ -7,6 +7,16 @@
 
 export async function conversation(conversation, ctx) {
 
-    await ctx.reply("Nice !");
+    await ctx.reply("Send something");
+
+    console.debug("ctx", ctx.session.conversation);
+    console.debug("conversation", conversation.session.conversation);
+
+    await conversation.waitFor("msg");
+
+    await ctx.reply("See logs");
+
+    console.debug("ctx", ctx.session.conversation);
+    console.debug("conversation", conversation.session.conversation);
 
 }
