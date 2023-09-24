@@ -45,7 +45,7 @@ bot.command("debug", ctx => ctx.reply(JSON.stringify(ctx.session, null, 2)));
 
 bot.use(createConversation(conversation, "conversation"));
 
-bot.command("start", ctx => ctx.conversation.enter("conversation"));
+bot.command("start", ctx => ctx.conversation.enter("conversation", {overwrite: true}));
 
 // Sample handler for a simple echo bot
 bot.on("message:text", ctx => ctx.reply(ctx.msg.text));
