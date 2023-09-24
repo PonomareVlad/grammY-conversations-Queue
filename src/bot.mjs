@@ -48,9 +48,11 @@ bot.command("debug", ctx => ctx.reply(JSON.stringify(
 
 bot.command("start", (ctx, next) => ctx.conversation.exit().then(next));
 
-bot.use(createConversation(conversation, "conversation"));
+const safe = bot.errorBoundary(error => console.error(error));
 
-bot.command("start", ctx => ctx.conversation.enter("conversation", {overwrite: true}));
+safe.use(createConversation(conversation, "conversation"));
+
+safe.command("start", ctx => ctx.conversation.enter("conversation", {overwrite: true}));
 
 // Sample handler for a simple echo bot
 bot.on("message:text", ctx => ctx.reply(ctx.msg.text));

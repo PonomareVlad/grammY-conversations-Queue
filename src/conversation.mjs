@@ -15,6 +15,8 @@ export async function conversation(conversation, ctx) {
 
     console.debug(JSON.stringify(conversation.session.conversation, null, 2));
 
+    throw new Error("Some error");
+
     await ctx.reply("Nice ?");
 
     await conversation.waitFor("msg");
