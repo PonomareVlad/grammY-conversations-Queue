@@ -7,11 +7,15 @@
 
 export async function conversation(conversation, ctx) {
 
+    await ctx.reply("Hey !");
+
     await ctx.reply("Send something");
 
     console.debug("conversation", JSON.stringify(conversation.session.conversation, null, 2));
 
     await conversation.waitFor("msg");
+
+    await ctx.reply("Done !");
 
     await ctx.reply("See logs");
 
