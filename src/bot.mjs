@@ -1,4 +1,25 @@
-import {Bot} from "grammy";
+/**
+ * @typedef {import("grammy").Context} Context
+ * @typedef {import("@grammyjs/types").Chat} Chat
+ * @typedef {import("grammy").MiddlewareObj} MiddlewareObj
+ * @typedef {import("grammy").SessionFlavor} SessionFlavor
+ * @typedef {import("@grammyjs/conversations").ConversationFlavor} ConversationFlavor
+ *
+ * @typedef {{} & Chat} SessionData
+ * @typedef {Context & ConversationFlavor & SessionFlavor<SessionData>} BotContext
+ */
+
+import {
+    Bot,
+    session
+} from "grammy";
+import {
+    conversations,
+    createConversation,
+} from "@grammyjs/conversations";
+import {users as collection} from "./db.mjs";
+import {conversation} from "./conversation.mjs";
+import {MongoDBAdapter} from "@grammyjs/storage-mongodb";
 
 export const {
 
@@ -11,7 +32,18 @@ export const {
 } = process.env;
 
 // Default grammY bot instance
-export const bot = new Bot(token);
+export const bot = /** @type {Bot<BotContext>} */ new Bot(token);
+
+bot.use(session({
+    initial: () => ({}),
+    storage: new MongoDBAdapter({collection}),
+}));
+
+bot.use(conversations());
+
+bot.use(createConversation(conversation, "conversation"));
+
+bot.command("start", ctx => ctx.conversation.enter("conversation"));
 
 // Sample handler for a simple echo bot
 bot.on("message:text", ctx => ctx.reply(ctx.msg.text));

@@ -11,11 +11,20 @@
     "start": "node --watch -r dotenv/config scripts/start.mjs"
   },
   "dependencies": {
+    "@grammyjs/conversations": "^1.1.2",
+    "@grammyjs/storage-mongodb": "^2.3.2",
     "grammy": "^1.17.1",
+    "grammy-debug-edge": "^0.0.0",
+    "mongo-fetch": "npm:@ponomarevlad/mongo-fetch@1.5.0-upsert.1",
     "vercel-grammy": "^0.1.1"
   },
   "devDependencies": {
     "dotenv": "^16.3.1"
+  },
+  "overrides": {
+    "bson": "npm:@ponomarevlad/bson@5.3.0-edge.1",
+    "mongo-fetch": "npm:@ponomarevlad/mongo-fetch@1.5.0-upsert.1",
+    "o-son": "npm:@ponomarevlad/o-son@1.0.1-web.1"
   },
   "engines": {
     "node": "^18.0.0"
