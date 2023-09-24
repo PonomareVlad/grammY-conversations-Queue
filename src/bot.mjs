@@ -46,6 +46,8 @@ bot.command("debug", ctx => ctx.reply(JSON.stringify(
     ctx.session.conversation ? delistify(ctx.session.conversation) : ctx.session.conversation, null, 2)
 ));
 
+bot.command("start", (ctx, next) => ctx.conversation.exit().then(next));
+
 bot.use(createConversation(conversation, "conversation"));
 
 bot.command("start", ctx => ctx.conversation.enter("conversation", {overwrite: true}));
