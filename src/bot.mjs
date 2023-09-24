@@ -42,7 +42,9 @@ bot.use(session({
 
 bot.use(conversations());
 
-bot.command("debug", ctx => ctx.reply(JSON.stringify(delistify(ctx.session.conversation), null, 2)));
+bot.command("debug", ctx => ctx.reply(JSON.stringify(
+    ctx.session.conversation ? delistify(ctx.session.conversation) : ctx.session.conversation, null, 2)
+));
 
 bot.use(createConversation(conversation, "conversation"));
 
