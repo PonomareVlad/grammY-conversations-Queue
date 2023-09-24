@@ -9,12 +9,18 @@ export async function conversation(conversation, ctx) {
 
     await ctx.reply("Send something");
 
-    console.debug("conversation", JSON.stringify(conversation.session.conversation, null, 2));
-
     await conversation.waitFor("msg");
 
     await ctx.reply("See logs");
 
-    console.debug("conversation", JSON.stringify(conversation.session.conversation, null, 2));
+    console.debug(JSON.stringify(conversation.session.conversation, null, 2));
+
+    await ctx.reply("Nice ?");
+
+    await conversation.waitFor("msg");
+
+    await ctx.reply("See more !");
+
+    console.debug(JSON.stringify(conversation.session.conversation, null, 2));
 
 }
