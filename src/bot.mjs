@@ -41,6 +41,8 @@ bot.use(session({
 
 bot.use(conversations());
 
+bot.command("debug", ctx => ctx.reply(JSON.stringify(ctx.session, null, 2)));
+
 bot.use(createConversation(conversation, "conversation"));
 
 bot.command("start", ctx => ctx.conversation.enter("conversation"));
