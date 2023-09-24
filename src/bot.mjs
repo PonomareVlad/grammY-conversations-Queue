@@ -17,6 +17,7 @@ import {
     conversations,
     createConversation,
 } from "@grammyjs/conversations";
+import {delistify} from "o-son";
 import {users as collection} from "./db.mjs";
 import {conversation} from "./conversation.mjs";
 import {MongoDBAdapter} from "@grammyjs/storage-mongodb";
@@ -41,7 +42,7 @@ bot.use(session({
 
 bot.use(conversations());
 
-bot.command("debug", ctx => ctx.reply(JSON.stringify(ctx.session, null, 2)));
+bot.command("debug", ctx => ctx.reply(JSON.stringify(delistify(ctx.session.conversation), null, 2)));
 
 bot.use(createConversation(conversation, "conversation"));
 
