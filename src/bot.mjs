@@ -11,36 +11,27 @@
 
 import {
     Bot,
-    Context,
     session,
 } from "grammy";
 import {
     conversations,
     createConversation,
 } from "@grammyjs/conversations";
-import {delistify} from "o-son";
 import {users as collection} from "./db.mjs";
 import {conversation} from "./conversation.mjs";
 import {MongoDBAdapter} from "@grammyjs/storage-mongodb";
 
 export const {
-
-    // Telegram bot token from t.me/BotFather
     TELEGRAM_BOT_TOKEN: token,
-
-    // Secret token to validate incoming updates
     TELEGRAM_SECRET_TOKEN: secretToken = String(token).split(":").pop()
-
 } = process.env;
 
 class ReTriggerBot extends Bot {
     async handleUpdate(update, webhookReplyEnvelope) {
-        let limit = 10;
         do {
-            limit--;
             this.retrigger = false;
             await super.handleUpdate(update, webhookReplyEnvelope);
-        } while (this.retrigger && limit > 0);
+        } while (this.retrigger);
     }
 }
 
@@ -52,25 +43,13 @@ bot.use(session({
     storage: new MongoDBAdapter({collection}),
 }));
 
-bot.use(async (ctx, next) => {
+bot.use((ctx, next) => {
     ctx.reTrigger = () => bot.retrigger = true;
-    await next();
+    return next();
 });
 
 bot.use(conversations());
 
-bot.command("debug", ctx => {
-    const {conversation} = ctx.session;
-    const data = conversation ? delistify(conversation) : null;
-    const json = JSON.stringify(data, null, 2).slice(0, 4095);
-    return ctx.reply(json || "Empty");
-});
-
-// bot.command("start", (ctx, next) => ctx.conversation.exit().then(next));
-
 bot.use(createConversation(conversation, "conversation"));
 
 bot.command("start", ctx => ctx.conversation.enter("conversation", {overwrite: true}));
-
-// Sample handler for a simple echo bot
-bot.on("message:text", ctx => ctx.reply(ctx.msg.text));

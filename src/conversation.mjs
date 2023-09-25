@@ -5,8 +5,6 @@
  * @typedef {Conversation<BotContext>} BotConversation
  */
 
-// console.debug(JSON.stringify(conversation.session.conversation, null, 2));
-
 export async function conversation(conversation, ctx) {
 
     const step = async () => {
@@ -14,7 +12,7 @@ export async function conversation(conversation, ctx) {
         await conversation.external(() => ctx.reTrigger());
         await conversation.waitUntil(
             ctx => ctx.update.update_id === update_id,
-            () => console.debug("Update skipped:", ctx.update)
+            () => console.warn("Update skipped:", ctx.update)
         );
     }
 
@@ -22,10 +20,12 @@ export async function conversation(conversation, ctx) {
 
     if (Math.random() < 0.5) throw new Error("Random error");
 
-    await ctx.reply("Send something").then(step);
+    await ctx.reply("Send any text").then(step);
 
-    await conversation.waitFor("msg");
+    const text = await conversation.form.text(ctx => ctx.reply("Send any text").then(step));
 
-    await ctx.reply("Done");
+    await ctx.reply("Done, your text:");
+
+    await ctx.reply(text);
 
 }
