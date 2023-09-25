@@ -5,35 +5,24 @@
  * @typedef {Conversation<BotContext>} BotConversation
  */
 
-const step = async conversation => {
-    const {update_id} = conversation.currentCtx.update;
-    await conversation.external(() => conversation.ctx.reTrigger());
-    await conversation.waitUntil(
-        ctx => ctx.update.update_id === update_id,
-        () => console.warn("Update skipped:", conversation.ctx.update)
-    );
-}
+import {createReTrigger} from "grammy-retrigger";
 
 export async function conversation(conversation, ctx) {
 
-    await ctx.reply("Hey !").then(() => step(conversation));
+    const step = createReTrigger(conversation, {drop: true});
 
-    if (Math.random() < 0.2) throw new Error("Random error");
+    await ctx.reply("Hey !").then(step);
 
-    await ctx.reply("Send any text").then(() => step(conversation));
+    if (Math.random() < 0.2)
+        throw new Error("Random error");
 
+    await ctx.reply("Send any text").then(step);
     const text = await conversation.form.text(ctx => ctx.reply("Send any text"));
-
-    await ctx.reply("Nice, send any number of repeats for your text (maximum 10)").then(() => step(conversation));
-
+    await ctx.reply("Nice, send any number of repeats for your text (maximum 10)").then(step);
     let repeats = await conversation.form.number(ctx => ctx.reply("Send any number"));
-
     if (repeats > 10) repeats = 10;
-
-    await ctx.reply(`Your text repeated ${repeats} time(s):`).then(() => step(conversation));
-
-    while (repeats-- > 0) await ctx.reply(text).then(() => step(conversation));
-
-    await ctx.reply(`Done`).then(() => step(conversation));
+    await ctx.reply(`Your text repeated ${repeats} time(s):`).then(step);
+    while (repeats-- > 0) await ctx.reply(text).then(step);
+    await ctx.reply(`Done`).then(step);
 
 }

@@ -9,47 +9,26 @@
  * @typedef {Context & ConversationFlavor & SessionFlavor<SessionData>} BotContext
  */
 
-import {
-    Bot,
-    session,
-} from "grammy";
-import {
-    conversations,
-    createConversation,
-} from "@grammyjs/conversations";
+import {session} from "grammy";
 import {users as collection} from "./db.mjs";
 import {conversation} from "./conversation.mjs";
+import {Bot, reTrigger} from "grammy-retrigger";
 import {MongoDBAdapter} from "@grammyjs/storage-mongodb";
+import {conversations, createConversation} from "@grammyjs/conversations";
 
 export const {
     TELEGRAM_BOT_TOKEN: token,
     TELEGRAM_SECRET_TOKEN: secretToken = String(token).split(":").pop()
 } = process.env;
 
-class ReTriggerBot extends Bot {
-    async handleUpdate(update, webhookReplyEnvelope) {
-        do {
-            this.retrigger = false;
-            await super.handleUpdate(update, webhookReplyEnvelope);
-        } while (this.retrigger);
-    }
-}
-
-// Default grammY bot instance
-export const bot = /** @type {Bot<BotContext>} */ new ReTriggerBot(token);
+export const bot = /** @type {Bot<BotContext>} */ new Bot(token);
 
 bot.use(session({
     initial: () => ({}),
     storage: new MongoDBAdapter({collection}),
 }));
 
-bot.use((ctx, next) => {
-    ctx.reTrigger = () => bot.retrigger = true;
-    return next();
-});
-
+bot.use(reTrigger(bot));
 bot.use(conversations());
-
 bot.use(createConversation(conversation, "conversation"));
-
 bot.command("start", ctx => ctx.conversation.enter("conversation", {overwrite: true}));
