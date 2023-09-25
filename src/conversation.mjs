@@ -34,4 +34,6 @@ export async function conversation(conversation, ctx) {
         () => console.debug("Update skipped:", ctx.update)
     );
 
+    conversation.ctx.drop = true;
+
 }
