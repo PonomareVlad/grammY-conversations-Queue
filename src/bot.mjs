@@ -33,7 +33,7 @@ bot.use(session({
 bot.use(reTrigger(bot));
 bot.use(conversations());
 bot.callbackQuery("cancel", async ctx => {
-    await ctx.answerCallbackQuery("Canceling...").catch(console.error);
+    await ctx.answerCallbackQuery("Canceling...", globalThis.signal).catch(console.error);
     return collection.updateOne({key: ctx.chat.id.toString()}, {$set: {tasks: []}});
 });
 bot.use(createConversation(conversation, "conversation"));
