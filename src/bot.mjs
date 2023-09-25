@@ -9,7 +9,7 @@
  * @typedef {Context & ConversationFlavor & SessionFlavor<SessionData>} BotContext
  */
 
-import {session} from "grammy";
+import {InlineKeyboard, session} from "grammy";
 import {users as collection} from "./db.mjs";
 import {conversation} from "./conversation.mjs";
 import {Bot, reTrigger} from "grammy-retrigger";
@@ -33,6 +33,7 @@ bot.use(session({
 bot.use(reTrigger(bot));
 bot.use(conversations());
 bot.callbackQuery("cancel", async ctx => {
+    await ctx.editMessageReplyMarkup({reply_markup: new InlineKeyboard()}).catch(console.error);
     await ctx.answerCallbackQuery("Canceling...", globalThis.signal).catch(console.error);
     return collection.updateOne({key: ctx.chat.id.toString()}, {$set: {tasks: []}});
 });
