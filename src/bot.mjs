@@ -59,9 +59,12 @@ bot.use(async (ctx, next) => {
 
 bot.use(conversations());
 
-bot.command("debug", ctx => ctx.reply(JSON.stringify(
-    ctx.session.conversation ? delistify(ctx.session.conversation) : "Empty", null, 2)
-));
+bot.command("debug", ctx => {
+    const {conversation} = ctx.session;
+    const data = conversation ? delistify(conversation) : null;
+    const json = JSON.stringify(data, null, 2).slice(0, 4095);
+    return ctx.reply(json || "Empty");
+});
 
 // bot.command("start", (ctx, next) => ctx.conversation.exit().then(next));
 
