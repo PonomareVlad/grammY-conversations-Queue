@@ -22,7 +22,7 @@ export async function conversation(conversation, ctx) {
 
     await ctx.reply("Send any text").then(step);
 
-    const text = await conversation.form.text(ctx => ctx.reply("Send any text").then(step));
+    const text = await conversation.form.text(ctx => ctx.reply("Send any text"));
 
     await ctx.reply("Done, your text:");
 
