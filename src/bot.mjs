@@ -70,8 +70,6 @@ bot.command("debug", ctx => {
 
 bot.use(createConversation(conversation, "conversation"));
 
-bot.filter(ctx => ctx.drop, ctx => console.debug("Update dropped:", ctx.update));
-
 bot.command("start", ctx => ctx.conversation.enter("conversation", {overwrite: true}));
 
 // Sample handler for a simple echo bot

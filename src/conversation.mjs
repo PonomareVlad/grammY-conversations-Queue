@@ -28,12 +28,5 @@ export async function conversation(conversation, ctx) {
     await conversation.waitFor("msg");
 
     await ctx.reply("Done");
-    await conversation.external(() => ctx.reTrigger());
-    await conversation.waitUntil(
-        ctx => ctx.update.update_id === update_id,
-        () => console.debug("Update skipped:", ctx.update)
-    );
-
-    conversation.ctx.drop = true;
 
 }
