@@ -11,7 +11,8 @@
 
 import {
     Bot,
-    session
+    Context,
+    session,
 } from "grammy";
 import {
     conversations,
@@ -32,8 +33,23 @@ export const {
 
 } = process.env;
 
+class ReTriggerBot extends Bot {
+    async handleUpdate(update, webhookReplyEnvelope) {
+        do {
+            this.retrigger = false;
+            await super.handleUpdate(update, webhookReplyEnvelope);
+        } while (this.retrigger);
+    }
+}
+
+class ContextConstructor extends Context {
+    reTrigger() {
+        bot.retrigger = true;
+    }
+}
+
 // Default grammY bot instance
-export const bot = /** @type {Bot<BotContext>} */ new Bot(token);
+export const bot = /** @type {Bot<BotContext>} */ new ReTriggerBot(token, {ContextConstructor});
 
 bot.use(session({
     initial: () => ({}),
@@ -48,11 +64,9 @@ bot.command("debug", ctx => ctx.reply(JSON.stringify(
 
 bot.command("start", (ctx, next) => ctx.conversation.exit().then(next));
 
-const safe = bot.errorBoundary(error => console.error(error));
+bot.use(createConversation(conversation, "conversation"));
 
-safe.use(createConversation(conversation, "conversation"));
-
-safe.command("start", ctx => ctx.conversation.enter("conversation", {overwrite: true}));
+bot.command("start", ctx => ctx.conversation.enter("conversation", {overwrite: true}));
 
 // Sample handler for a simple echo bot
 bot.on("message:text", ctx => ctx.reply(ctx.msg.text));
