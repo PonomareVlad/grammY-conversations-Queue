@@ -33,7 +33,9 @@ export async function conversation(conversation, ctx) {
     }, signal).then(step);
 
     while (repeats-- > 0) {
-        const active = await conversation.external(() => users.findOne({key: id.toString(), tasks: {$in: ["repeat"]}}));
+        const active = await conversation.external(
+            async () => Boolean(await users.findOne({key: id.toString(), tasks: {$in: ["repeat"]}}))
+        );
         if (!active) return await ctx.reply(`Canceled`, {}, signal).then(step);
         await ctx.reply(text, {}, signal).then(step);
     }
