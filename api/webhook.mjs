@@ -7,6 +7,7 @@ export const config = {runtime: "edge"};
 export default setWebhookCallback(bot, {
     drop_pending_updates: true,
     secret_token: secretToken,
+    max_connections: 100,
     path: "api/update",
     onError: "return"
 });

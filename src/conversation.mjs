@@ -6,6 +6,7 @@
  */
 
 import {createReTrigger} from "grammy-retrigger";
+import {InlineKeyboard} from "grammy";
 
 export async function conversation(conversation, ctx) {
 
@@ -24,7 +25,9 @@ export async function conversation(conversation, ctx) {
 
     if (repeats > 100) repeats = 100;
 
-    await ctx.reply(`Your text repeated ${repeats} time(s):`, {}, signal).then(step);
+    await ctx.reply(`Your text repeated ${repeats} time(s):`, {
+        reply_markup: new InlineKeyboard().text("Cancel", "cancel")
+    }, signal).then(step);
 
     while (repeats-- > 0) await ctx.reply(text, {}, signal).then(step);
 

@@ -32,5 +32,9 @@ bot.use(session({
 
 bot.use(reTrigger(bot));
 bot.use(conversations());
+bot.callbackQuery("cancel", async ctx => {
+    await ctx.conversation.exit();
+    await ctx.reply("Canceled");
+});
 bot.use(createConversation(conversation, "conversation"));
 bot.command("start", ctx => ctx.conversation.enter("conversation", {overwrite: true}));
