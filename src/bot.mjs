@@ -32,10 +32,11 @@ bot.use(session({
 
 bot.use(reTrigger(bot));
 bot.use(conversations());
-bot.callbackQuery("cancel", async ctx => {
-    await ctx.editMessageReplyMarkup({reply_markup: new InlineKeyboard()}, globalThis.signal).catch(console.error);
-    await ctx.answerCallbackQuery("Canceling...", globalThis.signal).catch(console.error);
-    return collection.updateOne({key: ctx.chat.id.toString()}, {$set: {tasks: []}});
-});
+bot.callbackQuery("cancel", ctx => Promise.allSettled([
+    ctx.answerCallbackQuery("Canceling...", globalThis.signal),
+    ctx.editMessageText(`Your text repeated some time(s):`, {}, globalThis.signal),
+    ctx.editMessageReplyMarkup({reply_markup: new InlineKeyboard()}, globalThis.signal),
+    collection.updateOne({key: ctx.chat.id.toString()}, {$set: {tasks: []}}),
+]));
 bot.use(createConversation(conversation, "conversation"));
 bot.command("start", ctx => ctx.conversation.enter("conversation", {overwrite: true}));
