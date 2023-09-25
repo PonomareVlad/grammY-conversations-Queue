@@ -33,9 +33,9 @@ bot.use(session({
 bot.use(reTrigger(bot));
 bot.use(conversations());
 bot.callbackQuery("cancel", ctx => Promise.allSettled([
-    ctx.answerCallbackQuery("Canceling...", globalThis.signal),
-    ctx.editMessageText(`Your text repeated some time(s):`, {}, globalThis.signal),
-    ctx.editMessageReplyMarkup({reply_markup: new InlineKeyboard()}, globalThis.signal),
+    ctx.answerCallbackQuery("Canceling..."),
+    ctx.editMessageText(`Your text repeated some time(s):`, {}),
+    ctx.editMessageReplyMarkup({reply_markup: new InlineKeyboard()}),
     collection.updateOne({key: ctx.chat.id.toString()}, {$set: {tasks: []}}),
 ]));
 bot.use(createConversation(conversation, "conversation"));
