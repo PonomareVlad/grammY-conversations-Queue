@@ -18,7 +18,7 @@ export async function conversation(conversation, ctx) {
 
     await ctx.reply("Hey !").then(() => step(conversation));
 
-    if (Math.random() < 0.5) throw new Error("Random error");
+    if (Math.random() < 0.3) throw new Error("Random error");
 
     await ctx.reply("Send any text").then(() => step(conversation));
 
