@@ -35,26 +35,27 @@ export const {
 
 class ReTriggerBot extends Bot {
     async handleUpdate(update, webhookReplyEnvelope) {
+        let limit = 10;
         do {
+            limit--;
             this.retrigger = false;
             await super.handleUpdate(update, webhookReplyEnvelope);
-        } while (this.retrigger);
-    }
-}
-
-class ContextConstructor extends Context {
-    reTrigger() {
-        bot.retrigger = true;
+        } while (this.retrigger && limit > 0);
     }
 }
 
 // Default grammY bot instance
-export const bot = /** @type {Bot<BotContext>} */ new ReTriggerBot(token, {ContextConstructor});
+export const bot = /** @type {Bot<BotContext>} */ new ReTriggerBot(token);
 
 bot.use(session({
     initial: () => ({}),
     storage: new MongoDBAdapter({collection}),
 }));
+
+bot.use(async (ctx, next) => {
+    ctx.reTrigger = () => bot.retrigger = true;
+    await next();
+});
 
 bot.use(conversations());
 
@@ -62,7 +63,7 @@ bot.command("debug", ctx => ctx.reply(JSON.stringify(
     ctx.session.conversation ? delistify(ctx.session.conversation) : ctx.session.conversation, null, 2)
 ));
 
-bot.command("start", (ctx, next) => ctx.conversation.exit().then(next));
+// bot.command("start", (ctx, next) => ctx.conversation.exit().then(next));
 
 bot.use(createConversation(conversation, "conversation"));
 

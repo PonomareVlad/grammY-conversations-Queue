@@ -12,14 +12,14 @@ export async function conversation(conversation, ctx) {
     const {update_id} = ctx.update;
 
     await ctx.reply("Hey !");
-    ctx.reTrigger();
+    await conversation.external(() => ctx.reTrigger());
     await conversation.waitUntil(
         ctx => ctx.update.update_id === update_id,
         () => console.debug("Update skipped:", ctx.update)
     );
 
     await ctx.reply("Send something");
-    ctx.reTrigger();
+    await conversation.external(() => ctx.reTrigger());
     await conversation.waitUntil(
         ctx => ctx.update.update_id === update_id,
         () => console.debug("Update skipped:", ctx.update)
@@ -28,7 +28,7 @@ export async function conversation(conversation, ctx) {
     await conversation.waitFor("msg");
 
     await ctx.reply("Done");
-    ctx.reTrigger();
+    await conversation.external(() => ctx.reTrigger());
     await conversation.waitUntil(
         ctx => ctx.update.update_id === update_id,
         () => console.debug("Update skipped:", ctx.update)
