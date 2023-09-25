@@ -24,9 +24,11 @@ export async function conversation(conversation, ctx) {
 
     const text = await conversation.form.text(ctx => ctx.reply("Send any text"));
 
-    await ctx.reply("Nice, send any number of repeats for your text").then(() => step(conversation));
+    await ctx.reply("Nice, send any number of repeats for your text (maximum 10)").then(() => step(conversation));
 
     let repeats = await conversation.form.number(ctx => ctx.reply("Send any number"));
+
+    if (repeats > 10) repeats = 10;
 
     await ctx.reply(`Your text repeated ${repeats} time(s):`).then(() => step(conversation));
 
