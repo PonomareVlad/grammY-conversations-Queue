@@ -18,6 +18,8 @@ export async function conversation(conversation, ctx) {
         () => console.debug("Update skipped:", ctx.update)
     );
 
+    if (Math.random() < 0.5) throw new Error("Random error");
+
     await ctx.reply("Send something");
     await conversation.external(() => ctx.reTrigger());
     await conversation.waitUntil(
