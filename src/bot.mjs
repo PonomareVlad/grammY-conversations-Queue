@@ -23,6 +23,8 @@ export const {
 
 export const bot = /** @type {Bot<BotContext>} */ new Bot(token);
 
+bot.use((ctx, next) => globalThis.signal.throwIfAborted() || next());
+
 bot.use(session({
     initial: () => ({}),
     storage: new MongoDBAdapter({collection}),

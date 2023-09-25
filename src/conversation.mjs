@@ -9,23 +9,25 @@ import {createReTrigger} from "grammy-retrigger";
 
 export async function conversation(conversation, ctx) {
 
+    const {signal} = globalThis;
+
     const step = createReTrigger(conversation, {drop: true});
 
-    await ctx.reply("Hey !").then(step);
-    await ctx.reply("Send any text").then(step);
+    await ctx.reply("Hey !", {}, signal).then(step);
+    await ctx.reply("Send any text", {}, signal).then(step);
 
-    const text = await conversation.form.text(ctx => ctx.reply("Send any text"));
+    const text = await conversation.form.text(ctx => ctx.reply("Send any text", {}, signal));
 
-    await ctx.reply("Nice, send any number of repeats for your text (maximum 100)").then(step);
+    await ctx.reply("Nice, send any number of repeats for your text (maximum 100)", {}, signal).then(step);
 
-    let repeats = await conversation.form.number(ctx => ctx.reply("Send any number"));
+    let repeats = await conversation.form.number(ctx => ctx.reply("Send any number", {}, signal));
 
     if (repeats > 100) repeats = 100;
 
-    await ctx.reply(`Your text repeated ${repeats} time(s):`).then(step);
+    await ctx.reply(`Your text repeated ${repeats} time(s):`, {}, signal).then(step);
 
-    while (repeats-- > 0) await ctx.reply(text).then(step);
+    while (repeats-- > 0) await ctx.reply(text, {}, signal).then(step);
 
-    await ctx.reply(`Done`).then(step);
+    await ctx.reply(`Done`, {}, signal).then(step);
 
 }
