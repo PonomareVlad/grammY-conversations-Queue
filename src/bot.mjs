@@ -9,11 +9,11 @@
  * @typedef {Context & ConversationFlavor & SessionFlavor<SessionData>} BotContext
  */
 
-import {InlineKeyboard, session} from "grammy";
+import "grammy-debug-edge";
 import {users as collection} from "./db.mjs";
 import {conversation} from "./conversation.mjs";
-import {Bot, reTrigger} from "grammy-retrigger";
 import {MongoDBAdapter} from "@grammyjs/storage-mongodb";
+import {Bot, InlineKeyboard, session, reTrigger} from "grammy-retrigger";
 import {conversations, createConversation} from "@grammyjs/conversations";
 
 export const {
@@ -23,20 +23,26 @@ export const {
 
 export const bot = /** @type {Bot<BotContext>} */ new Bot(token);
 
-bot.use((ctx, next) => globalThis.signal.throwIfAborted() || next());
+bot.use(reTrigger(bot));
 
-bot.use(session({
+const safe = bot.errorBoundary(err => {
+    const {error: {error_code} = {}} = err;
+    if (error_code === 429) throw err;
+    console.error(err);
+});
+
+safe.use(session({
     initial: () => ({}),
     storage: new MongoDBAdapter({collection}),
 }));
 
-bot.use(reTrigger(bot));
-bot.use(conversations());
-bot.callbackQuery("cancel", ctx => Promise.allSettled([
+safe.use(conversations());
+safe.command("restart", ctx => ctx.conversation.exit());
+safe.callbackQuery("cancel", ctx => Promise.allSettled([
     ctx.answerCallbackQuery("Canceling..."),
     ctx.editMessageText(`Your text repeated some time(s):`, {}),
     ctx.editMessageReplyMarkup({reply_markup: new InlineKeyboard()}),
     collection.updateOne({key: ctx.chat.id.toString()}, {$set: {tasks: []}}),
 ]));
-bot.use(createConversation(conversation, "conversation"));
-bot.command("start", ctx => ctx.conversation.enter("conversation", {overwrite: true}));
+safe.use(createConversation(conversation, "conversation"));
+safe.command("start", ctx => ctx.conversation.enter("conversation", {overwrite: true}));
