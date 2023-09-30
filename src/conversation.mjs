@@ -23,7 +23,7 @@ export async function conversation(conversation, ctx) {
 
     let repeats = await conversation.form.number(ctx => ctx.reply("Send any number"));
 
-    if (repeats > 100) repeats = 100;
+    // if (repeats > 100) repeats = 100;
 
     await conversation.external(() => users.updateOne({key: id.toString()}, {$addToSet: {tasks: "repeat"}}));
 
