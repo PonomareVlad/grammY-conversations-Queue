@@ -17,7 +17,7 @@
     "grammy-debug-edge": "^0.0.0",
     "mongo-fetch": "npm:@ponomarevlad/mongo-fetch@1.5.0-upsert.1",
     "o-son": "npm:@ponomarevlad/o-son@1.0.1-web.1",
-    "vercel-grammy": "^0.1.1"
+    "vercel-grammy": "^0.2.2"
   },
   "devDependencies": {
     "dotenv": "^16.3.1"
